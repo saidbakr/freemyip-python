@@ -2,7 +2,7 @@ from urllib.request import urlopen
 import csv
 import re
 data = {}
-base_url = 'https://freemyip.com/update?'
+base_url = 'https://freemyip.com/update'
 tokens_file = 'tokens.csv'
 ip = ''
 
@@ -14,7 +14,7 @@ def load_tokens(tokens_file):
 
 
 def create_url(domain,token):
-    return base_url + 'token=' + token + '&doamin=' + domain + '&verbose=yes'
+    return base_url + '?token=' + token + '&doamin=' + domain + '&verbose=yes'
 
 def extract_ip(msg):
     pattern = "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"    
