@@ -29,6 +29,7 @@ def check_url(url):
         exit()
     msg = output.read().decode('utf-8')
     if "ERROR" in msg:
+        ip = ''
         return False
     else:       
         ip = extract_ip(msg)        
