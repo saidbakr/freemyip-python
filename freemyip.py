@@ -1,9 +1,11 @@
 from urllib.request import urlopen
 import csv
 import re
-data = {}
+# Configurations values
 base_url = 'https://freemyip.com/update'
 tokens_file = 'tokens.csv'
+# End of Configurations
+data = {}
 ip = ''
 
 def load_tokens(tokens_file):
