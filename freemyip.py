@@ -1,3 +1,7 @@
+# Simple Python3 script that updates freemyip.com dynamic DNS hosts.
+# Author: Said Bakr <said_ fox@yhaoo.com>
+# Licence: Free but mention the author
+#
 from urllib.request import urlopen
 from requests import get
 import csv
@@ -31,10 +35,12 @@ def create_url(domain,token):
     return base_url + '?token=' + token + '&doamin=' + domain + '&verbose=yes'
 
 def extract_ip(msg):
+    #Extracting the IP address from the response body of freemyip.com
     pattern = "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"    
     return re.search(pattern,msg).group()
 
 def check_url(url,domain = None):
+    #Accessing the updating host URL of freemyip.com
     global ip
     try:
         output = urlopen(url)
@@ -51,24 +57,26 @@ def check_url(url,domain = None):
         prep_log({domain:[ip,time.time()]})     
         return True
 def prep_log(l):
+    #Prepare the logging data
     global log_data
     log_data.update(l)
 
 
 def create_log(log_file):
+    #Creating/Replacing the log file
     try:
         f = open(log_file,'w+')
     except IOError:
         print('The log file could not be written!')   
     
     for domain,i in log_data.items():
-        #print(i[1],domain)
+        #Writing the domain,IP,timestamp in each line of the log file
         f.write(domain+','+i[0]+','+str(i[1])+'\n')
             
     f.close()
     print('Log file ['+log_file+'] has been created.')
 
-
+#Executing the script
 load_tokens(tokens_file)
 print('Domain'+'\t\t\t'+'Status'+'\t'+'IP')
 for domain,token in data.items():
