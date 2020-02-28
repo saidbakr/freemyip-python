@@ -57,11 +57,13 @@ def create_log(log_file):
         f.write(domain+','+i[0]+','+str(i[1])+'\n')
             
     f.close()
+    print('Log file ['+log_file+'] has been created.')
 
 
 load_tokens(tokens_file)
 print('Domain'+'\t\t\t'+'Status'+'\t'+'IP')
 for domain,token in data.items():
     print(domain,'\t',check_url(create_url(domain, token),domain),'\t', ip)
+print('=====\nUpdate has been done!')
 
 create_log(log_file)
