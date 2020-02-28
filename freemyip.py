@@ -1,4 +1,5 @@
 from urllib.request import urlopen
+from requests import get
 import csv
 import re
 import time
@@ -16,6 +17,14 @@ def load_tokens(tokens_file):
         csvReader = csv.reader(csvDataFile)
         for row in csvReader:
             data[row[0]] = row[1].strip()
+
+def public_ip():
+    #Get Public IP from api.ipify.org
+    try:
+        my_ip = get('https://api.ipify.org').text
+    except IOError:
+        my_ip = ''
+    return my_ip
 
 
 def create_url(domain,token):
