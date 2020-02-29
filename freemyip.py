@@ -39,7 +39,11 @@ def read_domain_log(domain):
         return {'ip':'','time_s':0}
     log = f.read()
     pattern = domain+".*"
-    items = re.search(pattern,log).group().split(',')
+    try:
+        items = re.search(pattern,log).group().split(',')
+    except:
+        return {'ip':'','time':0}
+
     return {'ip':items[1],'time':float(items[2])}
 
 
