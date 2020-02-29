@@ -36,7 +36,7 @@ def read_domain_log(domain):
     try:
         f = open(log_file,'r')
     except IOError:
-        return {'ip':'','time_s':0}
+        return {'ip':'','time':0}
     log = f.read()
     pattern = domain+".*"
     try:
