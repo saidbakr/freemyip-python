@@ -11,6 +11,7 @@ import time
 base_url = 'https://freemyip.com/update'
 tokens_file = 'tokens.csv'
 log_file = 'log.csv'
+no_update_time = 3600 # The time in seconds between  successive updates with fixed IP
 # End of Configurations
 data = {}
 log_data = {}
@@ -30,6 +31,18 @@ def public_ip():
         my_ip = ''
     return my_ip
 
+def read_domain_log(domain):
+    # Extract the last IP and timestamp of the last update of the domain
+    try:
+        f = open(log_file,'r')
+    except IOError:
+        return {'ip':'','time_s':0}
+    log = f.read()
+    pattern = domain+".*"
+    items = re.search(pattern,log).group().split(',')
+    return {'ip':items[1],'time':float(items[2])}
+
+
 
 def create_url(domain,token):
     return base_url + '?token=' + token + '&doamin=' + domain + '&verbose=yes'
@@ -39,9 +52,24 @@ def extract_ip(msg):
     pattern = "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"    
     return re.search(pattern,msg).group()
 
-def check_url(url,domain = None):
+def not_allowed(domain_log,public_ip):
+    global no_update_time
+    barier = no_update_time + domain_log['time']
+    if barier > time.time() and public_ip == domain_log['ip']:
+        return True
+    else:
+        return False
+
+def check_url(url,domain = None, public_ip = ''):
     #Accessing the updating host URL of freemyip.com
     global ip
+    #Validating last logged IP and timestamp
+    domain_log = read_domain_log(domain)
+    if not_allowed(domain_log,public_ip):
+        ip = domain_log['ip']
+        prep_log({domain: [ip,domain_log['time']]})
+        return 'N.R.U*'
+        
     try:
         output = urlopen(url)
     except IOError:
@@ -56,6 +84,7 @@ def check_url(url,domain = None):
         ip = extract_ip(msg)   
         prep_log({domain:[ip,time.time()]})     
         return True
+
 def prep_log(l):
     #Prepare the logging data
     global log_data
@@ -78,9 +107,11 @@ def create_log(log_file):
 
 #Executing the script
 load_tokens(tokens_file)
+public_ip = public_ip()
 print('Domain'+'\t\t\t'+'Status'+'\t'+'IP')
 for domain,token in data.items():
-    print(domain,'\t',check_url(create_url(domain, token),domain),'\t', ip)
+    print(domain,'\t',check_url(create_url(domain, token),domain, public_ip),'\t', ip)   
 print('=====\nUpdate has been done!')
+print('*N.R.U: Not Require Update. i.e. the public IP still the same in the last [{}] seconds.'.format(no_update_time))
 
 create_log(log_file)
