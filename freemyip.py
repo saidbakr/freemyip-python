@@ -18,10 +18,15 @@ log_data = {}
 ip = ''
 
 def load_tokens(tokens_file):
-    with open(tokens_file) as csvDataFile:
-        csvReader = csv.reader(csvDataFile)
-        for row in csvReader:
-            data[row[0]] = row[1].strip()
+    try:
+
+        with open(tokens_file) as csvDataFile:
+            csvReader = csv.reader(csvDataFile)
+            for row in csvReader:
+                data[row[0]] = row[1].strip()
+    except IOError:
+        print("Tokens file [{}] is not found!".format(tokens_file))
+        exit()
 
 def public_ip():
     #Get Public IP from api.ipify.org
