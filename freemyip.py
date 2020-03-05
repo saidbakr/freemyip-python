@@ -20,13 +20,12 @@ ip = ' '
 
 def load_tokens(tokens_file):
     try:
-
         with open(tokens_file) as csvDataFile:
             csvReader = csv.reader(csvDataFile)
             for row in csvReader:
                 data[row[0]] = row[1].strip()
     except IOError:
-        print("Tokens file [{}] is not found!".format(tokens_file))
+        print("Error: Tokens file [{}] is not found!".format(tokens_file))
         exit()
 
 def public_ip():
@@ -49,10 +48,7 @@ def read_domain_log(domain):
         items = re.search(pattern,log).group().split(',')
     except:
         return {'ip':' ','time':0}
-
     return {'ip':items[1],'time':float(items[2])}
-
-
 
 def create_url(domain,token):
     return base_url + '?token=' + token + '&doamin=' + domain + '&verbose=yes'
@@ -78,12 +74,11 @@ def check_url(url,domain = None, public_ip = ' '):
     if not_allowed(domain_log,public_ip):
         ip = domain_log['ip']
         prep_log({domain: [ip,domain_log['time']]})
-        return 'N.R.U*'
-        
+        return 'NRU*'        
     try:
         output = urlopen(url)
     except IOError:
-        print("The URL could not be opened!\nCheckout the Internet connectivity to freemyip.com")
+        print("Error: The URL could not be opened!\nCheckout the Internet connectivity to freemyip.com")
         exit()
     msg = output.read().decode('utf-8')
     if "ERROR" in msg:
@@ -100,18 +95,15 @@ def prep_log(l):
     global log_data
     log_data.update(l)
 
-
 def create_log(log_file):
     #Creating/Replacing the log file
     try:
         f = open(log_file,'w+')
     except IOError:
-        print('The log file could not be written!')   
-    
+        print('Error: The log file could not be written!')       
     for domain,i in log_data.items():
         #Writing the domain,IP,timestamp in each line of the log file
-        f.write(domain+','+i[0]+','+str(i[1])+'\n')
-            
+        f.write(domain+','+i[0]+','+str(i[1])+'\n')            
     f.close()
     print('Log file ['+log_file+'] has been created.')
 
@@ -120,7 +112,7 @@ def print_log(log_file):
     try:
         f = open(log_file,'r')
     except IOError:
-        print('The log file [{}] could not be opened.'.format(log_file))
+        print('Error: The log file [{}] could not be opened.'.format(log_file))
         exit()
     output += "\nDomain   \t\t\t\t\t IP  \t\t\t  Timestamp\n"
     for line in f:
@@ -130,7 +122,6 @@ def print_log(log_file):
     output += '===== \nShow log is finished.'
     print(output)
 
-
 #Executing the script
 param = None
 try:
@@ -139,25 +130,17 @@ try:
         print_log(log_file)
         exit()
     else:
-        print('Not supported parameter value.')
+        print('Error: Not supported parameter value.')
         exit()
-    
-    
 except:
     if param != None:
         exit()
-
-
-
 
 load_tokens(tokens_file)
 public_ip = public_ip()
 print('Domain'+'\t\t\t'+'Status'+'\t\t'+'IP')
 for domain,token in data.items():
     print(domain,'\t',check_url(create_url(domain, token),domain, public_ip),'\t', ip)   
-print('=====\nUpdate has been done!')
-print('*N.R.U: Not Require Update. i.e. the public IP still the same in the last [{}] seconds.'.format(no_update_time))
-
+print('=====\nUpdate has been done.')
+print('*NRU: Not Require Update. i.e. the public IP still the same in the last [{}] seconds.'.format(no_update_time))
 create_log(log_file)
-
-
