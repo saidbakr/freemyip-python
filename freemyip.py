@@ -16,7 +16,7 @@ no_update_time = 3600 # The time in seconds between  successive updates with fix
 # End of Configurations
 data = {}
 log_data = {}
-ip = ''
+ip = ' '
 
 def load_tokens(tokens_file):
     try:
@@ -34,7 +34,7 @@ def public_ip():
     try:
         my_ip = get('https://api.ipify.org').text
     except IOError:
-        my_ip = ''
+        my_ip = ' '
     return my_ip
 
 def read_domain_log(domain):
@@ -42,13 +42,13 @@ def read_domain_log(domain):
     try:
         f = open(log_file,'r')
     except IOError:
-        return {'ip':'','time':0}
+        return {'ip':' ','time':0}
     log = f.read()
     pattern = domain+".*"
     try:
         items = re.search(pattern,log).group().split(',')
     except:
-        return {'ip':'','time':0}
+        return {'ip':' ','time':0}
 
     return {'ip':items[1],'time':float(items[2])}
 
@@ -70,7 +70,7 @@ def not_allowed(domain_log,public_ip):
     else:
         return False
 
-def check_url(url,domain = None, public_ip = ''):
+def check_url(url,domain = None, public_ip = ' '):
     #Accessing the updating host URL of freemyip.com
     global ip
     #Validating last logged IP and timestamp
@@ -87,7 +87,7 @@ def check_url(url,domain = None, public_ip = ''):
         exit()
     msg = output.read().decode('utf-8')
     if "ERROR" in msg:
-        ip = ''
+        ip = ' '
         prep_log({domain:[ip,time.time()]})
         return False
     else:       
@@ -122,11 +122,13 @@ def print_log(log_file):
     except IOError:
         print('The log file [{}] could not be opened.'.format(log_file))
         exit()
+    output += "\nDomain   \t\t\t\t\t IP  \t\t\t  Timestamp\n"
+    for line in f:
+        output += line.replace(',',' \t\t').replace(' ','\t')
     
-    output += f.read()
     f.close()
     output += '===== \nShow log is finished.'
-    return output
+    print(output)
 
 
 #Executing the script
@@ -134,7 +136,7 @@ param = None
 try:
     param = sys.argv[1]
     if param == 'log':
-        print(print_log(log_file))
+        print_log(log_file)
         exit()
     else:
         print('Not supported parameter value.')
