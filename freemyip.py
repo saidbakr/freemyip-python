@@ -123,8 +123,7 @@ def print_log(log_file):
     print(output)
 
 #Executing the script
-def exec():
-            
+def exec():            
     param = None
     try:
         param = sys.argv[1]
@@ -140,9 +139,9 @@ def exec():
 
     load_tokens(tokens_file)
     ipublic_ip = public_ip()
-    print('Domain'+'\t\t\t'+'Status'+'\t\t'+'IP')
+    print('Domain'+'\t\t\t\t'+'Updated'+'\t\t'+'IP')
     for domain,token in data.items():
-        print(domain,'\t',check_url(create_url(domain, token),domain, ipublic_ip),'\t', ip)   
+        print(domain,'\t\t',check_url(create_url(domain, token),domain, ipublic_ip),'\t', ip)   
     print('=====\nUpdate has been done.')
     print('*NRU: Not Require Update. i.e. the public IP still the same in the last [{}] seconds.'.format(no_update_time))
     create_log(log_file)
