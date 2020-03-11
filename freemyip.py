@@ -4,6 +4,7 @@
 #
 from urllib.request import urlopen
 from requests import get
+from datetime import datetime
 import csv
 import re
 import time
@@ -114,9 +115,12 @@ def print_log(log_file):
     except IOError:
         print('Error: The log file [{}] could not be opened.'.format(log_file))
         exit()
-    output += "\nDomain   \t\t\t\t\t IP  \t\t\t  Timestamp\n"
+    output += "\nDomain   \t\t\t\t\t IP  \t\t\t  Datetime\n"
     for line in f:
-        output += line.replace(',',' \t\t').replace(' ','\t')
+        timestamp = re.search('[+-]?([0-9]*[.])?[0-9]+$',line).group()
+        ts = float(timestamp)
+        dt = datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
+        output += line.replace(',',' \t\t').replace(' ','\t').replace(timestamp+'\n',dt+'\n')
     
     f.close()
     output += '===== \nShow log is finished.'
