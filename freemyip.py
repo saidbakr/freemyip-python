@@ -9,11 +9,13 @@ import csv
 import re
 import time
 import sys
+import os
 # Configurations values
 base_url = 'https://freemyip.com/update'
 tokens_file = 'tokens.csv'
 log_file = 'log.csv'
 no_update_time = 3600 # The time in seconds between  successive updates with fixed IP
+timeout = 100
 # End of Configurations
 data = {}
 log_data = {}
@@ -26,7 +28,7 @@ def load_tokens(tokens_file):
             for row in csvReader:
                 data[row[0]] = row[1].strip()
     except IOError:
-        print("Error: Tokens file [{}] is not found!".format(tokens_file))
+        print("Error: Tokens file [{}] is not found.".format(tokens_file))
         exit()
 
 def public_ip():
@@ -69,7 +71,7 @@ def not_allowed(domain_log,public_ip):
 
 def check_url(url,domain = None, public_ip = ' '):
     #Accessing the updating host URL of freemyip.com
-    global ip
+    global ip, timeout
     #Validating last logged IP and timestamp
     domain_log = read_domain_log(domain)
     if not_allowed(domain_log,public_ip):
@@ -77,10 +79,12 @@ def check_url(url,domain = None, public_ip = ' '):
         prep_log({domain: [ip,domain_log['time']]})
         return 'NRU*'        
     try:
-        output = urlopen(url)
+        output = urlopen(url,None,timeout)
     except IOError:
-        print("Error: The URL could not be opened!\nCheckout the Internet connectivity to freemyip.com")
-        exit()
+        #print("Error: The URL could not be opened!\nCheckout the Internet Connectivity to freemyip.com.")
+        ip = 'Connection Error'
+        return 'Error'
+       # exit()
     msg = output.read().decode('utf-8')
     if "ERROR" in msg:
         ip = ' '
@@ -101,7 +105,7 @@ def create_log(log_file):
     try:
         f = open(log_file,'w+')
     except IOError:
-        print('Error: The log file could not be written!')       
+        print('Error: The log file could not be written.')       
     for domain,i in log_data.items():
         #Writing the domain,IP,timestamp in each line of the log file
         f.write(domain+','+i[0]+','+str(i[1])+'\n')            
@@ -109,13 +113,13 @@ def create_log(log_file):
     print('Log file ['+log_file+'] has been created.')
 
 def print_log(log_file):
-    output = 'The log file below:\n'
+    output = '\033[1mThe log file is below:\x1b[0m\n'
     try:
         f = open(log_file,'r')
     except IOError:
         print('Error: The log file [{}] could not be opened.'.format(log_file))
         exit()
-    output += "\nDomain   \t\t\t\t\t IP  \t\t\t  Datetime\n"
+    output += "\n\x1b[1;32mDomain\x1b[0m   \t\t\t\t\t \x1b[6;30;42mIP\x1b[0m  \t\t\t  \x1b[6;30;42mDatetime\x1b[0m\n"
     for line in f:
         timestamp = re.search('[+-]?([0-9]*[.])?[0-9]+$',line).group()
         ts = float(timestamp)
@@ -123,22 +127,38 @@ def print_log(log_file):
         output += line.replace(',',' \t\t').replace(' ','\t').replace(timestamp+'\n',dt+'\n')
     
     f.close()
-    output += '===== \nShow log is finished.'
+    output += '===== \n\x1b[6;30;42mShow log is completed!\x1b[0m'
     print(output)
 
 #Executing the script
-def exec():            
-    param = None
+def exec():  
+    global timeout
+    param = ''
     try:
-        param = sys.argv[1]
-        if param == 'log':
-            print_log(log_file)
-            exit()
-        else:
-            print('Error: Not supported parameter value.')
-            exit()
-    except:
+        
+        if len(sys.argv) > 1:
+            param = sys.argv[1]
+            if param == 'log':
+                print_log(log_file)
+                exit()
+            elif param == 'logpath':
+                print('Log file path:\n')
+                print(os.getcwd()+os.sep+log_file)
+                exit()
+            elif 't=' in param:
+                t = param[2:]
+                try:
+                    t = int(t)
+                except:
+                    print ('Timeout value is not integer')
+                    exit()
+                timeout = t                
+            else:
+                print('Error: Not supported parameter value.')
+                exit()
+    except IOError:        
         if param != None:
+            print('Params Error')
             exit()
 
     load_tokens(tokens_file)
@@ -146,7 +166,7 @@ def exec():
     print('Domain'+'\t\t\t\t'+'Updated'+'\t\t'+'IP')
     for domain,token in data.items():
         print(domain,'\t\t',check_url(create_url(domain, token),domain, ipublic_ip),'\t', ip)   
-    print('=====\nUpdate has been done.')
+    print('=====\nUpdate has been done as shown above!\nAt connection timeout {} ms'.format(timeout))
     print('*NRU: Not Require Update. i.e. the public IP still the same in the last [{}] seconds.'.format(no_update_time))
     create_log(log_file)
 exec()

@@ -15,6 +15,15 @@ Simple Python3 script to update [Freemyip.com](https://freemyip.com) dynamic DNS
       ```
       python3 freemyip.py log
       ```
+ 5. Showing log file path:
+ 
+    ```
+    python3 freemyip.py logpath
+    ```
+ 6. **New** Setting the connection timeout in milli seconds. The default value is 100 ms.
+    ```
+    python3 freemyip.py t=140
+    ```
  
  **Hint**: The above command can be added to crontab in Linux-based operating systems or any equivalent tool in other operating systems to keep automatic host update.
 
