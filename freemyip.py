@@ -133,7 +133,7 @@ def print_log(log_file):
     output += '===== \n\x1b[6;30;42mShow log is completed!\x1b[0m'
     print(output)
 def printHelp():
-    return "[Command] [Param]\n\nParameters:\n\n\tlog: Display log.\n\n\tlogpath: Display log file path.\n\n\tt=X: Use custom connection timeout where X must be an integer represents the timeout in milliseconds, ex: t=35.\n\n\tf: Force update i.e. update even the last update time does not exceed the limit and the IP does not has changed.\n\n\th: Display this help message."
+    return "[Command] [Param]\n\nParameters:\n\n\tlog: Display log.\n\n\tlogpath: Display log file path.\n\n\tt=X: Use custom connection timeout where X must be an integer represents the timeout in milliseconds, ex: t=35.\n\n\tf: Force update i.e. update even the last update time does not exceed the limit and the IP does not has changed.\n\n\tft: Force update with timeout. ex: ft=35.\n\n\th: Display this help message."
 
 #Executing the script
 def exec():  
@@ -152,7 +152,7 @@ def exec():
                 print('Log file path:\n')
                 print(os.getcwd()+os.sep+log_file)
                 exit()
-            elif 't=' in param:
+            elif 't=' in param and 'ft=' not in param:
                 t = param[2:]
                 try:
                     t = int(t)
@@ -160,6 +160,15 @@ def exec():
                     print ('Timeout value is not integer')
                     exit()
                 timeout = t
+            elif 'ft=' in param:
+                t = param[3:]
+                try:
+                    t = int(t)
+                except:
+                    print ('Timeout value is not integer')
+                    exit()
+                timeout = t
+                forceUpdate = True
             elif param == 'h':
                 print(printHelp())
                 exit()
