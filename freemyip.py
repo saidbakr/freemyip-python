@@ -20,6 +20,7 @@ timeout = 100
 data = {}
 log_data = {}
 ip = ' '
+forceUpdate = False
 
 def load_tokens(tokens_file):
     try:
@@ -62,7 +63,9 @@ def extract_ip(msg):
     return re.search(pattern,msg).group()
 
 def not_allowed(domain_log,public_ip):
-    global no_update_time
+    global no_update_time, forceUpdate
+    if forceUpdate:
+        return False
     barier = no_update_time + domain_log['time']
     if barier > time.time() and public_ip == domain_log['ip']:
         return True
@@ -130,17 +133,19 @@ def print_log(log_file):
     output += '===== \n\x1b[6;30;42mShow log is completed!\x1b[0m'
     print(output)
 def printHelp():
-    return "[Command] [Param]\n\nParameters:\n\n\tlog: Display log.\n\n\tlogpath: Display log file path.\n\n\tt=X: Use custom connection timeout where X must be an integer represents the timeout in milliseconds, ex: t=35.\n\n\th: Display this help message."
+    return "[Command] [Param]\n\nParameters:\n\n\tlog: Display log.\n\n\tlogpath: Display log file path.\n\n\tt=X: Use custom connection timeout where X must be an integer represents the timeout in milliseconds, ex: t=35.\n\n\tf: Force update i.e. update even the last update time does not exceed the limit and the IP does not has changed.\n\n\th: Display this help message."
 
 #Executing the script
 def exec():  
-    global timeout
+    global timeout, forceUpdate
     param = ''
     try:
         
         if len(sys.argv) > 1:
             param = sys.argv[1]
-            if param == 'log':
+            if param == 'f':
+                forceUpdate = True
+            elif param == 'log':
                 print_log(log_file)
                 exit()
             elif param == 'logpath':
