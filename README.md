@@ -24,6 +24,15 @@ Simple Python3 script to update [Freemyip.com](https://freemyip.com) dynamic DNS
     ```
     python3 freemyip.py t=140
     ```
+ 7. **New** Force update and force update with timeout
+    ```
+    python3 freemyip.py f
+    python3 freemyip.py ft=140
+    ```
+ 8. Help parameter h
+    ```
+    python3 freemyip.py h
+    ```
  
  **Hint**: The above command can be added to crontab in Linux-based operating systems or any equivalent tool in other operating systems to keep automatic host update.
 
@@ -31,3 +40,8 @@ Simple Python3 script to update [Freemyip.com](https://freemyip.com) dynamic DNS
  ~~Introducing flooding requests inhibition on freemyip.com server, by identifying the current public IP of the host using third party api and comparing it with the last recorded log IP and last update time. In other words, if the host IP has not been changed in the last hour, for example, the updating of the specified domain will not occure.~~
 
  Now TODO has been done using [ipify.org](https://www.ipify.org) api to identify the current public IP of the host.
+ 
+ 
+ ### Screenshots
+ 
+ ![Screen Shot #1](screenshot1.png)
