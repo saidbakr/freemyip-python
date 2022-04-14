@@ -87,7 +87,7 @@ def check_url(url,domain = None, public_ip = ' '):
        # exit()
     msg = output.read().decode('utf-8')
     if "ERROR" in msg:
-        ip = ' '
+        ip = '__Bad Token__'
         prep_log({domain:[ip,time.time()]})
         return False
     else:       
@@ -129,6 +129,8 @@ def print_log(log_file):
     f.close()
     output += '===== \n\x1b[6;30;42mShow log is completed!\x1b[0m'
     print(output)
+def printHelp():
+    return "[Command] [Param]\n\nParameters:\n\n\tlog: Display log.\n\n\tlogpath: Display log file path.\n\n\tt=X: Use custom connection timeout where X must be an integer represents the timeout in milliseconds, ex: t=35.\n\n\th: Display this help message."
 
 #Executing the script
 def exec():  
@@ -152,9 +154,12 @@ def exec():
                 except:
                     print ('Timeout value is not integer')
                     exit()
-                timeout = t                
+                timeout = t
+            elif param == 'h':
+                print(printHelp())
+                exit()
             else:
-                print('Error: Not supported parameter value.')
+                print('Error: Not supported parameter value.\nUse h parameter to display help.')
                 exit()
     except IOError:        
         if param != None:
