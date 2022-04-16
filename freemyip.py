@@ -85,7 +85,8 @@ def check_url(url,domain = None, public_ip = ' '):
         output = urlopen(url,None,timeout)
     except IOError:
         #print("Error: The URL could not be opened!\nCheckout the Internet Connectivity to freemyip.com.")
-        ip = 'Connection Error'
+        ip = 'Connect Error'
+        prep_log({domain:[ip,0]})
         return 'Error'
        # exit()
     msg = output.read().decode('utf-8')
