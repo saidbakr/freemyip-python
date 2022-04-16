@@ -123,7 +123,7 @@ def print_log(log_file):
     except IOError:
         print('Error: The log file [{}] could not be opened.'.format(log_file))
         exit()
-    output += "\n\x1b[1;32mDomain\x1b[0m   \t\t\t\t\t \x1b[6;30;42mIP\x1b[0m  \t\t\t  \x1b[6;30;42mDatetime\x1b[0m\n"
+    output += "\n\x1b[1;32mDomain\x1b[0m   \t\t\t\t\t \x1b[1;32mIP\x1b[0m  \t\t\t    \x1b[1;32mDatetime\x1b[0m\n"
     for line in f:
         timestamp = re.search('[+-]?([0-9]*[.])?[0-9]+$',line).group()
         ts = float(timestamp)
@@ -131,7 +131,7 @@ def print_log(log_file):
         output += line.replace(',',' \t\t').replace(' ','\t').replace(timestamp+'\n',dt+'\n')
     
     f.close()
-    output += '===== \n\x1b[6;30;42mShow log is completed!\x1b[0m'
+    output += '=================== \n\x1b[1;32mShow log is completed!\x1b[0m'
     print(output)
 def printHelp():
     return "[Command] [Param]\n\nParameters:\n\n\tlog: Display log.\n\n\tlogpath: Display log file path.\n\n\tt=X: Use custom connection timeout where X must be an integer represents the timeout in milliseconds, ex: t=35.\n\n\tf: Force update i.e. update even the last update time does not exceed the limit and the IP does not has changed.\n\n\tft: Force update with timeout. ex: ft=35.\n\n\th: Display this help message."
@@ -183,9 +183,9 @@ def exec():
 
     load_tokens(tokens_file)
     ipublic_ip = public_ip()
-    print('Domain'+'\t\t\t\t'+'Updated'+'\t\t'+'IP')
+    print('Domain'+'\t\t\t\t'+'Updated'+'\t\t   '+'IP')
     for domain,token in data.items():
-        print(domain,'\t\t',check_url(create_url(domain, token),domain, ipublic_ip),'\t', ip)   
+        print(domain,'\t\t',check_url(create_url(domain, token),domain, ipublic_ip),'\t   ', ip)   
     print('=====\nUpdate has been done as shown above!\nAt connection timeout {} ms'.format(timeout))
     print('*NRU: Not Require Update. i.e. the public IP still the same in the last [{}] seconds.'.format(no_update_time))
     create_log(log_file)
