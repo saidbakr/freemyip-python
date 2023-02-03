@@ -85,13 +85,13 @@ def check_url(url,domain = None, public_ip = ' '):
         output = urlopen(url,None,timeout)
     except IOError:
         #print("Error: The URL could not be opened!\nCheckout the Internet Connectivity to freemyip.com.")
-        ip = 'Connect Error'
+        ip = '\033[91m'+'Connect Error'+'\033[0m'
         prep_log({domain:[ip,0]})
         return 'Error'
        # exit()
     msg = output.read().decode('utf-8')
     if "ERROR" in msg:
-        ip = '__Bad Token__'
+        ip = '\033[91m'+'__Bad Token__'+'\033[0m'
         prep_log({domain:[ip,time.time()]})
         return False
     else:       
@@ -149,8 +149,7 @@ def exec():
             elif param == 'log':
                 print_log(log_file)
                 exit()
-            elif param == 'logpath':
-                print('Log file path:\n')
+            elif param == 'logpath':                
                 print(os.getcwd()+os.sep+log_file)
                 exit()
             elif 't=' in param and 'ft=' not in param:
@@ -183,7 +182,7 @@ def exec():
 
     load_tokens(tokens_file)
     ipublic_ip = public_ip()
-    print('Domain'+'\t\t\t\t'+'Updated'+'\t\t   '+'IP')
+    print('\033[1m'+'Domain'+'\t\t\t\t'+'Updated'+'\t\t   '+'IP'+'\033[0m')
     for domain,token in data.items():
         print(domain,'\t\t',check_url(create_url(domain, token),domain, ipublic_ip),'\t   ', ip)   
     print('=====\nUpdate has been done as shown above!\nAt connection timeout {} ms'.format(timeout))
