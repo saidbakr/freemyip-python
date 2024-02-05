@@ -182,9 +182,16 @@ def exec():
 
     load_tokens(tokens_file)
     ipublic_ip = public_ip()
-    print('\033[1m'+'Domain'+'\t\t\t\t'+'Updated'+'\t\t   '+'IP'+'\033[0m')
+    print('\033[1mDomain'.ljust(35,' ')+'Updated'.rjust(40,' ')+'\t\t\tIP\033[0m'.ljust(40,' '))
     for domain,token in data.items():
-        print(domain,'\t\t',check_url(create_url(domain, token),domain, ipublic_ip),'\t   ', ip)   
+        chkVal = check_url(create_url(domain, token),domain, ipublic_ip)
+        if not chkVal or chkVal == 'Error':
+            chkVal = 'False'
+            print('\033[91m✘'+domain.ljust(40,' '),'\t\t\t'+chkVal,'\033[0m\t\t\t', ip)            
+        else:
+            chkVal = 'True' if chkVal is True else chkVal
+            print('✔'+domain.ljust(40,' ')+'\t\t\t'+chkVal+'\t\t\t'+ip)
+            
     print('=====\nUpdate has been done as shown above!\nAt connection timeout {} ms'.format(timeout))
     print('*NRU: Not Require Update. i.e. the public IP still the same in the last [{}] seconds.'.format(no_update_time))
     create_log(log_file)
