@@ -20,6 +20,7 @@ timeout = 100
 data = {}
 log_data = {}
 ip = ' '
+publicIPchks = ['https://freemyip.com/checkip', 'https://api.ipify.org']
 forceUpdate = False
 
 def load_tokens(tokens_file):
@@ -32,10 +33,10 @@ def load_tokens(tokens_file):
         print("Error: Tokens file [{}] is not found.".format(tokens_file))
         exit()
 
-def public_ip():
+def public_ip(i):
     #Get Public IP from api.ipify.org
     try:
-        my_ip = get('https://api.ipify.org').text
+        my_ip = get(publicIPchks[0]).text
     except IOError:
         my_ip = ' '
     return my_ip
@@ -80,7 +81,7 @@ def check_url(url,domain = None, public_ip = ' '):
     if not_allowed(domain_log,public_ip):
         ip = domain_log['ip']
         prep_log({domain: [ip,domain_log['time']]})
-        return 'NRU*'        
+        return 'NRU ⃰'        
     try:
         output = urlopen(url,None,timeout)
     except IOError:
@@ -181,18 +182,18 @@ def exec():
             exit()
 
     load_tokens(tokens_file)
-    ipublic_ip = public_ip()
-    print('\033[1mDomain'.ljust(35,' ')+'Updated'.rjust(40,' ')+'\t\t\tIP\033[0m'.ljust(40,' '))
+    ipublic_ip = public_ip(1)
+    print('\033[1mDomain'.ljust(65,' ')+'Updated'.ljust(15,' ')+'IP\033[0m')
     for domain,token in data.items():
         chkVal = check_url(create_url(domain, token),domain, ipublic_ip)
         if not chkVal or chkVal == 'Error':
             chkVal = 'False'
-            print('\033[91m✘'+domain.ljust(40,' '),'\t\t\t'+chkVal,'\033[0m\t\t\t', ip)            
+            print('\033[91m✘'+domain.ljust(60,' ')+chkVal.ljust(10,' ')+'\033[0m'+ip)            
         else:
             chkVal = 'True' if chkVal is True else chkVal
-            print('✔'+domain.ljust(40,' ')+'\t\t\t'+chkVal+'\t\t\t'+ip)
+            print('✔'+domain.ljust(60,' ')+chkVal.ljust(10,' ')+ip)
             
-    print('=====\nUpdate has been done as shown above!\nAt connection timeout {} ms'.format(timeout))
+    print(' '.rjust(50,"🝙")+'\nUpdate has been done as shown above!\nAt connection timeout {} ms'.format(timeout))
     print('*NRU: Not Require Update. i.e. the public IP still the same in the last [{}] seconds.'.format(no_update_time))
     create_log(log_file)
 exec()
