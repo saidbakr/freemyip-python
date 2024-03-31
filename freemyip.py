@@ -141,6 +141,7 @@ def printHelp():
 def exec():  
     global timeout, forceUpdate
     param = ''
+    
     try:
         
         if len(sys.argv) > 1:
@@ -179,7 +180,7 @@ def exec():
     except IOError:        
         if param != None:
             print('Params Error')
-            exit()
+            exit()    
 
     load_tokens(tokens_file)
     ipublic_ip = public_ip(1)
@@ -196,4 +197,12 @@ def exec():
     print(' '.rjust(50,"🝙")+'\nUpdate has been done as shown above!\nAt connection timeout {} ms'.format(timeout))
     print('*NRU: Not Require Update. i.e. the public IP still the same in the last [{}] seconds.'.format(no_update_time))
     create_log(log_file)
-exec()
+try:
+    exec()
+except KeyboardInterrupt:
+    print('\nExit by the user!')
+    try:
+        sys.exit(130)
+    except SystemExit:
+        os._exit(130)
+
